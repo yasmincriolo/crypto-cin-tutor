@@ -15,12 +15,14 @@ O **CryptoCIn Tutor** atua como um plantão de dúvidas virtual e interativo par
 * Google Colab (como ambiente de execução)
 
 ## Estrutura do Repositório
+```text
 crypto-cin-tutor/
 ├── data/
 │   └── base_conhecimento.txt   # Repositório de conceitos teóricos do Boneh & Shoup
 ├── src/
 │   └── app.py                  # Script principal do assistente interativo
 └── README.md                   # Documentação do projeto
+```
 
 ## Como Executar
 1. Clone o repositório ou abra o código no Google Colab.
