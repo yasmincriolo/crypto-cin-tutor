@@ -13,7 +13,7 @@ st.markdown(
     " Shoup**."
 )
 
-# Gestão da Chave de API de forma segura
+# Gestão da Chave de API de forma segura (prioriza o Secrets do Streamlit Cloud)
 api_key = os.environ.get("GEMINI_API_KEY")
 
 try:
@@ -70,7 +70,7 @@ if api_key:
     ----------------------------
     """
 
-  # Inicialização correta do cliente e da sessão de chat no session_state
+  # Inicialização correta e persistente do cliente e da sessão de chat no session_state
   if "chat_session" not in st.session_state:
     client = genai.Client(api_key=api_key)
     st.session_state.chat_session = client.chats.create(
