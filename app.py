@@ -9,8 +9,8 @@ st.set_page_config(
 
 st.title("🛡️ CryptoCIn Tutor (CIn/UFPE)")
 st.markdown(
-    "Assistente virtual acadêmico baseado no livro de **Dan Boneh & Victor"
-    " Shoup**."
+    "O teu assistente virtual para a disciplina de Criptografia (CIn/UFPE)" 
+    "Baseado nas referências teóricas do curso."
 )
 
 # Gestão da Chave de API de forma segura
