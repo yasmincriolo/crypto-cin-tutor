@@ -10,8 +10,8 @@ st.set_page_config(
 st.title("🛡️ CryptoCIn Tutor (CIn/UFPE)")
 st.markdown(
 
-     "O teu assistente virtual para a disciplina de Criptografia (CIn/UFPE)" 
-    " **Baseado nas referências teóricas do curso**."
+     "O teu assistente virtual para a disciplina de Criptografia (CIn/UFPE), " 
+    " **baseado nas referências teóricas do curso**."
 )
 
 # Gestão da Chave de API de forma segura
