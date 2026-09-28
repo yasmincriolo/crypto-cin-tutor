@@ -13,7 +13,7 @@ st.markdown(
     " Shoup**."
 )
 
-# Gestão da Chave de API de forma segura (prioriza o Secrets do Streamlit Cloud)
+# Gestão da Chave de API de forma segura
 api_key = os.environ.get("GEMINI_API_KEY")
 
 try:
@@ -70,20 +70,11 @@ if api_key:
     ----------------------------
     """
 
-  # Inicialização correta e persistente do cliente e da sessão de chat no session_state
-  if "chat_session" not in st.session_state:
-    client = genai.Client(api_key=api_key)
-    st.session_state.chat_session = client.chats.create(
-        model="gemini-3.8-flash",
-        config=types.GenerateContentConfig(
-            system_instruction=system_instruction, temperature=0.3
-        ),
-    )
-
+  # Inicializa apenas o histórico de mensagens no session_state
   if "messages" not in st.session_state:
     st.session_state.messages = []
 
-  # Exibir mensagens anteriores no chat da interface
+  # Exibir mensagens anteriores na interface
   for message in st.session_state.messages:
     with st.chat_message(message["role"]):
       st.markdown(message["content"])
@@ -92,6 +83,7 @@ if api_key:
   if user_query := st.chat_input(
       "Digite a sua dúvida de criptografia ou cole uma questão..."
   ):
+    # Adiciona a mensagem do utilizador ao histórico visual
     st.session_state.messages.append({"role": "user", "content": user_query})
     with st.chat_message("user"):
       st.markdown(user_query)
@@ -99,9 +91,33 @@ if api_key:
     with st.chat_message("assistant"):
       with st.spinner("O CryptoCIn Tutor está a analisar a sua dúvida..."):
         try:
-          response = st.session_state.chat_session.send_message(user_query)
+          # Instancia o cliente de forma fresca e segura a cada requisição para evitar timeout/fecho de socket
+          client = genai.Client(api_key=api_key)
+
+          # Constrói o histórico de conversação para o formato esperado pelo Gemini
+          chat_history = []
+          for msg in st.session_state.messages[:-1]:  # Exclui a última query atual
+            role = "user" if msg["role"] == "user" else "model"
+            chat_history.append(
+                types.Content(
+                    role=role, parts=[types.Part.from_text(text=msg["content"])]
+                )
+            )
+
+          # Cria a sessão de chat passando o histórico prévio
+          chat = client.chats.create(
+              model="gemini-3.8-flash",
+              history=chat_history,
+              config=types.GenerateContentConfig(
+                  system_instruction=system_instruction, temperature=0.3
+              ),
+          )
+
+          response = chat.send_message(user_query)
           bot_reply = response.text
           st.markdown(bot_reply)
+
+          # Adiciona a resposta ao histórico
           st.session_state.messages.append(
               {"role": "assistant", "content": bot_reply}
           )
