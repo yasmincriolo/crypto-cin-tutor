@@ -9,7 +9,7 @@ st.set_page_config(
 
 st.title("🛡️ CryptoCIn Tutor (CIn/UFPE)")
 st.markdown(
-    "Assistente virtual académico baseado no livro de **Dan Boneh & Victor"
+    "Assistente virtual acadêmico baseado no livro de **Dan Boneh & Victor"
     " Shoup**."
 )
 
