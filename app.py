@@ -107,7 +107,7 @@ if api_key:
 
           # Cria a sessão de chat passando o histórico prévio
           chat = client.chats.create(
-              model = "gemini-2.5-flash",
+              model="gemini-3.8-flash",
               history=chat_history,
               config=types.GenerateContentConfig(
                   system_instruction=system_instruction, temperature=0.3
