@@ -9,26 +9,24 @@ st.set_page_config(
 
 st.title("🛡️ CryptoCIn Tutor (CIn/UFPE)")
 st.markdown(
-    "Assistente virtual acadêmico baseado no livro de **Dan Boneh & Victor"
+    "Assistente virtual académico baseado no livro de **Dan Boneh & Victor"
     " Shoup**."
 )
 
-# Gestão da Chave de API de forma segura e sem erros de secrets
+# Gestão da Chave de API de forma segura
 api_key = os.environ.get("GEMINI_API_KEY")
 
-if not api_key:
-  # Tenta obter de forma segura se estiver configurado no Streamlit Cloud
-  try:
+try:
+  if not api_key:
     api_key = st.secrets["GEMINI_API_KEY"]
-  except Exception:
-    pass
+except Exception:
+  pass
 
 if not api_key:
-  api_key = st.text_input("Cole sua GEMINI_API_KEY aqui:", type="password")
+  api_key = st.text_input("Cole a sua GEMINI_API_KEY aqui:", type="password")
 
 if api_key:
   os.environ["GEMINI_API_KEY"] = api_key
-  client = genai.Client(api_key=api_key)
 
   # Base de Conhecimento
   base_conhecimento = """
@@ -56,7 +54,7 @@ if api_key:
 
   # System Prompt sem LaTeX
   system_instruction = f"""
-    Você é o CryptoCIn Tutor, um assistente virtual acadêmico e monitor especialista da disciplina de Criptografia do CIn/UFPE, baseando-se estritamente no livro 'A Graduate Course in Applied Cryptography' (Dan Boneh & Victor Shoup).
+    Você é o CryptoCIn Tutor, um assistente virtual académico e monitor especialista da disciplina de Criptografia do CIn/UFPE, baseando-se estritamente no livro 'A Graduate Course in Applied Cryptography' (Dan Boneh & Victor Shoup).
 
     Sua missão principal é ajudar os alunos a resolverem e entenderem dúvidas sobre questões, exercícios, teoremas e conceitos específicos da disciplina. 
 
@@ -65,24 +63,25 @@ if api_key:
     2. Utilize os conceitos formais e matemáticos presentes na base de conhecimento.
     3. Guie o raciocínio mostrando a intuição por trás da resposta.
     4. Escreva todas as explicações e fórmulas matemáticas usando texto normal, português claro e símbolos legíveis (como Pr[], XOR, somatório), evitando completamente o uso de formatação LaTeX ($...$ ou blocos de equação).
-    5. Mantenha um tom encorajador, acadêmico e colaborativo.
+    5. Mantenha um tom encorajador, académico e colaborativo.
 
     --- BASE DE CONHECIMENTO ---
     {base_conhecimento}
     ----------------------------
     """
 
-  # Inicialização do Histórico de Conversação no Chat do Streamlit
-  if "messages" not in st.session_state:
-    st.session_state.messages = []
-
+  # Inicialização correta do cliente e da sessão de chat no session_state
   if "chat_session" not in st.session_state:
+    client = genai.Client(api_key=api_key)
     st.session_state.chat_session = client.chats.create(
         model="gemini-3.8-flash",
         config=types.GenerateContentConfig(
             system_instruction=system_instruction, temperature=0.3
         ),
     )
+
+  if "messages" not in st.session_state:
+    st.session_state.messages = []
 
   # Exibir mensagens anteriores no chat da interface
   for message in st.session_state.messages:
@@ -91,7 +90,7 @@ if api_key:
 
   # Caixa de entrada de texto do chat web
   if user_query := st.chat_input(
-      "Digite sua dúvida de criptografia ou cole uma questão..."
+      "Digite a sua dúvida de criptografia ou cole uma questão..."
   ):
     st.session_state.messages.append({"role": "user", "content": user_query})
     with st.chat_message("user"):
