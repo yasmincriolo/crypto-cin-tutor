@@ -32,7 +32,7 @@ if api_key:
     - Princípios de Kerckhoffs e noções iniciais de segurança teórica vs. computacional.
 
     ## Unidade 2: Criptografia Simétrica (Chave Secreta)
-    - Cifras de Fluxo (Stream Ciphers) e OTP (One-Time Pad).
+    - Cifras de Fluxo (Stream Ciphers) e OTP (One-Time Pad) - Ex: $c_i = m_i \oplus k_i$.
     - Cifras de Bloco (Block Ciphers): Estrutura de Feistel, DES e AES.
     - Modos de Operação de Cifras de Bloco (ECB, CBC, CFB, OFB, CTR, GCM) e ataques por CPA/CCA.
     - Funções de Hash Criptográficas e integridade (SHA-256, SHA-3, resistência a colisões).
@@ -51,7 +51,7 @@ if api_key:
     - Noções de Criptografia Pós-Quântica e aplicações modernas.
     """
 
-  # System Prompt focado na disciplina do CIn/UFPE como um todo
+  # System Prompt com permissão total para LaTeX
   system_instruction = f"""
     Você é o CryptoCIn Tutor, um assistente virtual acadêmico e monitor especialista da disciplina de Criptografia do Centro de Informática da UFPE (CIn/UFPE).
 
@@ -61,7 +61,7 @@ if api_key:
     1. Quando o aluno trouxer uma dúvida teórica, um exercício de lista ou uma questão de prova, explique o conceito passo a passo de forma didática, clara e analítica.
     2. Utilize a ementa e os tópicos da grade curricular de Criptografia do CIn/UFPE como referência principal para guiar as respostas.
     3. Guie o raciocínio mostrando a intuição lógica e prática por trás da resposta, contextualizando com segurança da informação.
-    4. Escreva todas as explicações e fórmulas matemáticas usando texto normal, português claro e símbolos legíveis (como Pr[], XOR, somatório), evitando completamente o uso de formatação LaTeX ($...$ ou blocos de equação).
+    4. Escreva todas as fórmulas matemáticas, equações, frações e variáveis utilizando formatação LaTeX padrão (como $c_i = m_i \\oplus k_i$ para fórmulas inline e blocos de equação com $$...$$ para destaque), para que fiquem bem formatadas na interface.
     5. Mantenha um tom encorajador, acadêmico, parceiro e colaborativo, típicos de um monitor do CIn.
 
     --- EMENTA / BASE DE CONHECIMENTO ---
