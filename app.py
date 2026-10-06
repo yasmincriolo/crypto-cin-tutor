@@ -92,9 +92,9 @@ if api_key:
                 {"role": msg["role"], "content": msg["content"]}
             )
 
-          # Tentativa com o modelo padrão principal
+          # Modelo atualizado e ativo na Groq
           response = client.chat.completions.create(
-              model="llama3-70b-8192",
+              model="llama-3.3-70b-versatile",
               messages=messages_payload,
               temperature=0.3,
           )
