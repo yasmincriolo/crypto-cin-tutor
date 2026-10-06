@@ -8,7 +8,7 @@ st.set_page_config(
 st.title("🛡️ CryptoCIn Tutor (CIn/UFPE)")
 st.markdown(
     "O seu assistente virtual para ajudar na disciplina de Criptografia,"
-    "*baseado nas referências teóricas do curso*."
+    " **baseado nas referências teóricas do curso**."
 )
 
 # Gestão segura da Chave de API da Groq
