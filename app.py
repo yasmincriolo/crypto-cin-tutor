@@ -3,10 +3,10 @@ from groq import Groq
 import streamlit as st
 
 st.set_page_config(
-    page_title="CryptoCIn Tutor", page_icon="🛡️", layout="centered"
+    page_title="CryptoCIn Tutor", page_icon="🛡️️", layout="centered"
 )
 
-st.title("🛡️️ CryptoCIn Tutor (CIn/UFPE)")
+st.title("🛡️ CryptoCIn Tutor (CIn/UFPE)")
 st.markdown(
     "O seu assistente virtual oficial para a disciplina de Criptografia"
     " do CIn/UFPE!"
@@ -14,23 +14,23 @@ st.markdown(
 
 
 def limpar_texto_maquina(texto):
-  # Remove blocos de alinhamento LaTeX
+  # Remove completamente blocos LaTeX de alinhamento pesados
   texto = re.sub(
-      r"\\begin\{aligned\}(.*?)\\end\{aligned\}", r"\1", texto, flags=re.DOTALL
+      r"\\begin\{aligned\}.*?\\end\{aligned\}", "", texto, flags=re.DOTALL
   )
-  # Remove comandos de barras e alinhamentos
-  texto = (
-      texto.replace(r"\&", "")
-      .replace(r"\quad", "")
-      .replace(r"\\", "\n")
-      .replace(r"\oplus", "combinado com (XOR)")
-  )
-  # Remove colchetes ao redor de equações
+  # Remove linhas de alinhamento com & ou comandos de quebra excessivos
+  texto = texto.replace(r"\&", "").replace(r"\quad", "").replace(r"\\", "\n")
+  # Remove blocos de colchetes inteiros que contêm equações de máquina
+  texto = re.sub(r"\[\s*C_2\s*=\s*.*?\]", "", texto, flags=re.DOTALL)
+  # Remove quaisquer colchetes residuais restantes
   texto = re.sub(r"\[\s*(.*?)\s*\]", r"\1", texto)
-  # Remove parênteses e formatações robóticas de variáveis ex: (C_1) -> C_1
-  texto = re.sub(r"\(([A-Za-z0-9_]+)\)", r"\1", texto)
-  # Remove caixas e blocos estranhos
+  # Substitui operadores LaTeX de XOR por texto limpo
+  texto = texto.replace(r"\oplus", "combinado com XOR")
+  # Remove caixas e parênteses excessivos de variáveis
   texto = re.sub(r"\\boxed\{(.*?)\}", r"\1", texto)
+  texto = re.sub(r"\(([A-Za-z0-9_]+)\)", r"\1", texto)
+  # Limpa quebras de linha duplas excessivas geradas pela remoção
+  texto = re.sub(r"\n\s*\n", "\n\n", texto)
   return texto
 
 
@@ -113,7 +113,7 @@ if api_key:
 
           bot_reply = response.choices[0].message.content
 
-          # Aplica a limpeza cirúrgica para remover qualquer padrão robótico
+          # Aplica a limpeza robusta para eliminar códigos e colchetes residuais
           bot_reply_final = limpar_texto_maquina(bot_reply)
 
           st.markdown(bot_reply_final)
