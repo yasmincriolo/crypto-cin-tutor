@@ -22,63 +22,53 @@ if not api_key:
   api_key = st.text_input("Cole a sua GROQ_API_KEY aqui:", type="password")
 
 if api_key:
-  # Base de Conhecimento ampla baseada na grade da disciplina
   base_conhecimento = """
     # Ementa e Base de Conhecimento - Criptografia (CIn/UFPE)
 
     ## Unidade 1: Introdução e Criptografia Clássica
-    - Histórico, conceitos básicos e objetivos da segurança da informação (Confidencialidade, Integridade, Disponibilidade).
-    - Cifras clássicas (Cifra de César, Vigenère, Cifra de Substituição e Transposição) e criptoanálise básica.
-    - Princípios de Kerckhoffs e noções iniciais de segurança teórica vs. computacional.
+    - Histórico, conceitos básicos e objetivos da segurança da informação.
+    - Cifras clássicas e criptoanálise básica.
+    - Princípios de Kerckhoffs e noções de segurança teórica vs. computacional.
 
     ## Unidade 2: Criptografia Simétrica (Chave Secreta)
     - Cifras de Fluxo (Stream Ciphers) e OTP (One-Time Pad) - Ex: $c_i = m_i \oplus k_i$.
     - Cifras de Bloco (Block Ciphers): Estrutura de Feistel, DES e AES.
-    - Modos de Operação de Cifras de Bloco (ECB, CBC, CFB, OFB, CTR, GCM) e ataques por CPA/CCA.
-    - Funções de Hash Criptográficas e integridade (SHA-256, SHA-3, resistência a colisões).
-    - Códigos de Autenticação de Mensagem (MACs, HMAC).
+    - Modos de Operação de Cifras de Bloco (CBC, CTR, GCM) e malha de segurança.
+    - Funções de Hash Criptográficas e MACs (HMAC).
 
     ## Unidade 3: Criptografia Assimétrica (Chave Pública)
-    - Conceito de funções de mão única com alçapão (Trapdoor One-Way Functions).
-    - Criptossistema RSA (geração de chaves, cifragem, decifragem e segurança).
-    - Troca de Chaves Diffie-Hellman e o problema do logaritmo discreto.
-    - Criptografia de Curvas Elípticas (ECC).
-    - Assinaturas Digitais e Infraestrutura de Chaves Públicas (PKI / Certificados Digitais).
-
-    ## Unidade 4: Protocolos Criptográficos e Tópicos Avançados
-    - Acordo de chaves, autenticação de entidades e protocolos de canal seguro (ex: SSL/TLS, IPsec).
-    - Conceitos básicos de Provas de Conhecimento Zero (Zero-Knowledge Proofs).
-    - Noções de Criptografia Pós-Quântica e aplicações modernas.
+    - Funções de mão única com alçapão (Trapdoor One-Way Functions).
+    - Criptossistema RSA e Troca de Chaves Diffie-Hellman.
+    - Assinaturas Digitais e Curvas Elípticas (ECC).
     """
 
-  # System Prompt com permissão total para LaTeX
+  # System Prompt reforçado estritamente para LaTeX com $ e $$
   system_instruction = f"""
     Você é o CryptoCIn Tutor, um assistente virtual acadêmico e monitor especialista da disciplina de Criptografia do Centro de Informática da UFPE (CIn/UFPE).
 
-    Sua missão principal é ajudar os alunos a resolverem e entenderem dúvidas sobre questões, exercícios, listas, provas, teoremas e conceitos da ementa oficial da disciplina.
+    Sua missão principal é ajudar os alunos a resolverem e entenderem dúvidas sobre questões, exercícios, listas, provas e conceitos da ementa da disciplina.
 
-    DIRETRIZES DE ATUAÇÃO PARA O TIRA-DÚVIDAS:
-    1. Quando o aluno trouxer uma dúvida teórica, um exercício de lista ou uma questão de prova, explique o conceito passo a passo de forma didática, clara e analítica.
-    2. Utilize a ementa e os tópicos da grade curricular de Criptografia do CIn/UFPE como referência principal para guiar as respostas.
-    3. Guie o raciocínio mostrando a intuição lógica e prática por trás da resposta, contextualizando com segurança da informação.
-    4. Escreva todas as fórmulas matemáticas, equações, frações e variáveis utilizando formatação LaTeX padrão (como $c_i = m_i \\oplus k_i$ para fórmulas inline e blocos de equação com $$...$$ para destaque), para que fiquem bem formatadas na interface.
-    5. Mantenha um tom encorajador, acadêmico, parceiro e colaborativo, típicos de um monitor do CIn.
+    DIRETRIZES DE FORMATAÇÃO MATEMÁTICA (MUITO IMPORTANTE):
+    1. NUNCA utilize colchetes como [ fórmula ] ou parênteses como (variável) para representar equações ou símbolos matemáticos.
+    2. TODA fórmula matemática, variável isolada, expressão ou operação XOR deve obrigatoriamente usar LaTeX com cifrões:
+       - Use cifrões simples para variáveis e fórmulas no meio do texto, por exemplo: $m_i$, $k_i$, $c_i$, e $c_i = m_i \oplus k_i$.
+       - Use cifrões duplos para destacar equações importantes em linhas separadas, por exemplo:
+         $$c_i = m_i \oplus k_i$$
+         $$k = c \oplus m$$
+    3. Mantenha as explicações didáticas, passo a passo, no estilo de um monitor do CIn/UFPE.
 
     --- EMENTA / BASE DE CONHECIMENTO ---
     {base_conhecimento}
     -------------------------------------
     """
 
-  # Inicializa o histórico de mensagens
   if "messages" not in st.session_state:
     st.session_state.messages = []
 
-  # Exibir mensagens anteriores na interface
   for message in st.session_state.messages:
     with st.chat_message(message["role"]):
       st.markdown(message["content"])
 
-  # Caixa de entrada de texto do chat web
   if user_query := st.chat_input(
       "Digite a sua dúvida de criptografia ou cole uma questão..."
   ):
