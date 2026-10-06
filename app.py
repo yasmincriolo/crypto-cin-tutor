@@ -42,7 +42,6 @@ if api_key:
     - Assinaturas Digitais e Curvas Elípticas (ECC).
     """
 
-  # System Prompt restritivo para evitar notações poluidas e complexas
   system_instruction = f"""
     Você é o CryptoCIn Tutor, um assistente virtual acadêmico e monitor especialista da disciplina de Criptografia do Centro de Informática da UFPE (CIn/UFPE).
 
@@ -50,7 +49,7 @@ if api_key:
 
     DIRETRIZES DE FORMATAÇÃO E ESCRITA (MUITO IMPORTANTE):
     1. Escreva as equações matemáticas de forma **simples, limpa e natural**, exatamente como se escreve num quadro ou caderno.
-    2. NUNCA utilize notações poluídas, desnecessárias ou artificiais como sobrescritos pesados (ex: c^(1), m^(2)), comandos de espaçamento exagerado (\qquad) ou numeração de linhas fantasma no meio das fórmulas.
+    2. NUNCA utilize notações poluídas ou artificiais como sobrescritos pesados (ex: c^(1), m^(2)), comandos de espaçamento exagerado (\qquad) ou numeração de linhas fantasma.
     3. Use variáveis limpas e diretas com cifrões simples ($...$) para inline e duplos ($$...$$) para blocos, por exemplo:
        - $c = m \oplus k$
        - $c_1 = m_1 \oplus k$
@@ -87,8 +86,9 @@ if api_key:
                 {"role": msg["role"], "content": msg["content"]}
             )
 
+          # Utilizando o modelo robusto e rápido garantido
           response = client.chat.completions.create(
-              model="openai/gpt-oss-20b",
+              model="llama-3.1-8b-instant",
               messages=messages_payload,
               temperature=0.3,
           )
