@@ -8,7 +8,7 @@ st.set_page_config(
 st.title("🛡️ CryptoCIn Tutor (CIn/UFPE)")
 st.markdown(
     "O seu assistente virtual para ajudar na disciplina de Criptografia,"
-    " **baseado nas referências teóricas do curso**."
+    " baseado no livro de **Dan Boneh & Victor Shoup**."
 )
 
 # Gestão segura da Chave de API da Groq
@@ -92,9 +92,9 @@ if api_key:
                 {"role": msg["role"], "content": msg["content"]}
             )
 
-          # Modelo atualizado e ativo na Groq
+          # Modelo universal de alta performance garantido na API da Groq
           response = client.chat.completions.create(
-              model="llama-3.3-70b-versatile",
+              model="openai/gpt-oss-20b",
               messages=messages_payload,
               temperature=0.3,
           )
