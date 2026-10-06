@@ -1,3 +1,4 @@
+import re
 from groq import Groq
 import streamlit as st
 
@@ -10,6 +11,24 @@ st.markdown(
     "O seu assistente virtual oficial para a disciplina de Criptografia"
     " do CIn/UFPE!"
 )
+
+
+# Função para limpar e remover blocos indesejados de LaTeX gerados pela IA
+def limpar_formatacao_matematica(texto):
+  # Remove blocos \begin{aligned} ... \end{aligned} e transforma em quebras de linha limpas
+  texto = re.sub(
+      r"\\begin\{aligned\}(.*?)\\end\{aligned\}", r"\1", texto, flags=re.DOTALL
+  )
+  # Remove comandos de alinhamento e espaçamento excessivo
+  texto = texto.replace(r"\&", "").replace(r"\quad", "").replace(r"\\", "\n")
+  # Remove colchetes ao redor de equações [ ... ] transformando em texto simples
+  texto = re.sub(r"\[\s*(.*?)\s*\]", r"\1", texto)
+  # Remove parênteses em volta de variáveis isoladas indesejadas ex: (C_1) -> C_1
+  texto = re.sub(r"\(([A-Za-z0-9_]+)\)", r"\1", texto)
+  # Remove caixas de destaque \boxed{}
+  texto = re.sub(r"\\boxed\{(.*?)\}", r"\1", texto)
+  return texto
+
 
 # Gestão segura da Chave de API da Groq
 api_key = None
@@ -31,7 +50,7 @@ if api_key:
     - Princípios de Kerckhoffs e noções de segurança teórica vs. computacional.
 
     ## Unidade 2: Criptografia Simétrica (Chave Secreta)
-    - Cifras de Fluxo (Stream Ciphers) e OTP (One-Time Pad) - Ex: $c = m \oplus k$.
+    - Cifras de Fluxo (Stream Ciphers) e OTP (One-Time Pad) - Ex: c = m XOR k.
     - Cifras de Bloco (Block Ciphers): Estrutura de Feistel, DES e AES.
     - Modos de Operação de Cifras de Bloco (CBC, CTR, GCM) e malha de segurança.
     - Funções de Hash Criptográficas e MACs (HMAC).
@@ -42,18 +61,15 @@ if api_key:
     - Assinaturas Digitais e Curvas Elípticas (ECC).
     """
 
-  # Prompt ultra-rigoroso para proibir blocos LaTeX complexos e exigir formato limpo
   system_instruction = f"""
     Você é o CryptoCIn Tutor, um assistente virtual acadêmico e monitor especialista da disciplina de Criptografia do Centro de Informática da UFPE (CIn/UFPE).
 
     Sua missão principal é ajudar os alunos a resolverem e entenderem dúvidas sobre questões, exercícios, listas, provas e conceitos da ementa da disciplina.
 
-    REGRAS ABSOLUTAS DE FORMATAÇÃO:
-    1. PROIBIDO usar blocos LaTeX avançados como \\begin{{aligned}}, \\qquad, colchetes ao redor de equações como [ C2 = ... ] ou numeração de linhas fantasma.
-    2. Escreva as contas e operações de forma simples, em texto corrido ou usando apenas cifrões simples para variáveis ($C_1$, $P_1$, $C_2$).
-    3. Para mostrar operações de XOR ou substituição, escreva de maneira direta e limpa, por exemplo:
-       C_2 = C_1 \\oplus (P_1 \\oplus P_2)
-    4. Mantenha um tom didático, claro, direto ao ponto e acolhedor, típico de um monitor do CIn/UFPE.
+    DIRETRIZES DE ESCRITA:
+    1. Explique os conceitos passo a passo de forma simples, clara e direta, como um monitor explicando num quadro.
+    2. Escreva as equações matemáticas e contas linha por linha de forma natural, usando texto corrido e símbolos simples (como XOR ou +).
+    3. Mantenha um tom didático, acolhedor e muito prestativo.
 
     --- EMENTA / BASE DE CONHECIMENTO ---
     {base_conhecimento}
@@ -92,10 +108,14 @@ if api_key:
           )
 
           bot_reply = response.choices[0].message.content
-          st.markdown(bot_reply)
+
+          # Limpa automaticamente qualquer formatação indesejada de colchetes ou LaTeX complexo
+          bot_reply_limpo = limpar_formatacao_matematica(bot_reply)
+
+          st.markdown(bot_reply_limpo)
 
           st.session_state.messages.append(
-              {"role": "assistant", "content": bot_reply}
+              {"role": "assistant", "content": bot_reply_limpo}
           )
         except Exception as e:
           st.error(f"Ocorreu um erro ao gerar a resposta: {e}")
