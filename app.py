@@ -2,7 +2,7 @@ from groq import Groq
 import streamlit as st
 
 st.set_page_config(
-    page_title="CryptoCIn Tutor", page_icon="🛡️️", layout="centered"
+    page_title="CryptoCIn Tutor", page_icon="🛡️", layout="centered"
 )
 
 st.title("🛡️ CryptoCIn Tutor (CIn/UFPE)")
@@ -94,7 +94,7 @@ if api_key:
             )
 
           response = client.chat.completions.create(
-              model="llama-3.1-8b-instant",
+              model="llama-3.3-70b-versatile",
               messages=messages_payload,
               temperature=0.3,
           )
