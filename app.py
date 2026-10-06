@@ -1,6 +1,4 @@
-import os
-from google import genai
-from google.genai import types
+from groq import Groq
 import streamlit as st
 
 st.set_page_config(
@@ -9,26 +7,21 @@ st.set_page_config(
 
 st.title("🛡️ CryptoCIn Tutor (CIn/UFPE)")
 st.markdown(
-
-     "O teu assistente virtual para a disciplina de Criptografia (CIn/UFPE), " 
-    " **baseado nas referências teóricas do curso**."
+    "O seu assistente virtual para ajudar na disciplina de Criptografia,"
+    " baseado no livro de **Dan Boneh & Victor Shoup**."
 )
 
-# Gestão da Chave de API de forma segura
-api_key = os.environ.get("GEMINI_API_KEY")
-
+# Gestão segura da Chave de API da Groq
+api_key = None
 try:
-  if not api_key:
-    api_key = st.secrets["GEMINI_API_KEY"]
+  api_key = st.secrets["GROQ_API_KEY"]
 except Exception:
   pass
 
 if not api_key:
-  api_key = st.text_input("Cole a sua GEMINI_API_KEY aqui:", type="password")
+  api_key = st.text_input("Cole a sua GROQ_API_KEY aqui:", type="password")
 
 if api_key:
-  os.environ["GEMINI_API_KEY"] = api_key
-
   # Base de Conhecimento
   base_conhecimento = """
     # Base de Conhecimento Tira-Dúvidas - CryptoCIn Tutor (CIn/UFPE)
@@ -55,7 +48,7 @@ if api_key:
 
   # System Prompt sem LaTeX
   system_instruction = f"""
-    Você é o CryptoCIn Tutor, um assistente virtual académico e monitor especialista da disciplina de Criptografia do CIn/UFPE, baseando-se estritamente no livro 'A Graduate Course in Applied Cryptography' (Dan Boneh & Victor Shoup).
+    Você é o CryptoCIn Tutor, um assistente virtual acadêmico e monitor especialista da disciplina de Criptografia do CIn/UFPE, baseando-se estritamente no livro 'A Graduate Course in Applied Cryptography' (Dan Boneh & Victor Shoup).
 
     Sua missão principal é ajudar os alunos a resolverem e entenderem dúvidas sobre questões, exercícios, teoremas e conceitos específicos da disciplina. 
 
@@ -64,14 +57,14 @@ if api_key:
     2. Utilize os conceitos formais e matemáticos presentes na base de conhecimento.
     3. Guie o raciocínio mostrando a intuição por trás da resposta.
     4. Escreva todas as explicações e fórmulas matemáticas usando texto normal, português claro e símbolos legíveis (como Pr[], XOR, somatório), evitando completamente o uso de formatação LaTeX ($...$ ou blocos de equação).
-    5. Mantenha um tom encorajador, académico e colaborativo.
+    5. Mantenha um tom encorajador, acadêmico e colaborativo.
 
     --- BASE DE CONHECIMENTO ---
     {base_conhecimento}
     ----------------------------
     """
 
-  # Inicializa apenas o histórico de mensagens no session_state
+  # Inicializa o histórico de mensagens
   if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -84,7 +77,6 @@ if api_key:
   if user_query := st.chat_input(
       "Digite a sua dúvida de criptografia ou cole uma questão..."
   ):
-    # Adiciona a mensagem do utilizador ao histórico visual
     st.session_state.messages.append({"role": "user", "content": user_query})
     with st.chat_message("user"):
       st.markdown(user_query)
@@ -92,33 +84,24 @@ if api_key:
     with st.chat_message("assistant"):
       with st.spinner("O CryptoCIn Tutor está a analisar a sua dúvida..."):
         try:
-          # Instancia o cliente de forma fresca e segura a cada requisição para evitar timeout/fecho de socket
-          client = genai.Client(api_key=api_key)
+          client = Groq(api_key=api_key)
 
-          # Constrói o histórico de conversação para o formato esperado pelo Gemini
-          chat_history = []
-          for msg in st.session_state.messages[:-1]:  # Exclui a última query atual
-            role = "user" if msg["role"] == "user" else "model"
-            chat_history.append(
-                types.Content(
-                    role=role, parts=[types.Part.from_text(text=msg["content"])]
-                )
+          # Monta as mensagens incluindo a instrução de sistema e todo o histórico
+          messages_payload = [{"role": "system", "content": system_instruction}]
+          for msg in st.session_state.messages:
+            messages_payload.append(
+                {"role": msg["role"], "content": msg["content"]}
             )
 
-          # Cria a sessão de chat passando o histórico prévio
-          chat = client.chats.create(
-              model="gemini-3.8-flash",
-              history=chat_history,
-              config=types.GenerateContentConfig(
-                  system_instruction=system_instruction, temperature=0.3
-              ),
+          response = client.chat.completions.create(
+              model="llama-3.3-70b-versatile",
+              messages=messages_payload,
+              temperature=0.3,
           )
 
-          response = chat.send_message(user_query)
-          bot_reply = response.text
+          bot_reply = response.choices[0].message.content
           st.markdown(bot_reply)
 
-          # Adiciona a resposta ao histórico
           st.session_state.messages.append(
               {"role": "assistant", "content": bot_reply}
           )
@@ -126,6 +109,5 @@ if api_key:
           st.error(f"Ocorreu um erro ao gerar a resposta: {e}")
 else:
   st.info(
-      "Por favor, insira a sua chave da API do Gemini para iniciar o"
-      " assistente."
+      "Por favor, insira a sua chave da API da Groq para iniciar o assistente."
   )
