@@ -7,8 +7,8 @@ st.set_page_config(
 
 st.title("🛡️ CryptoCIn Tutor (CIn/UFPE)")
 st.markdown(
-    "O seu assistente virtual para ajudar na disciplina de Criptografia,"
-    " baseado no livro de **Dan Boneh & Victor Shoup**."
+    "O seu assistente virtual oficial para a disciplina de Criptografia"
+    " do CIn/UFPE!"
 )
 
 # Gestão segura da Chave de API da Groq
@@ -22,46 +22,51 @@ if not api_key:
   api_key = st.text_input("Cole a sua GROQ_API_KEY aqui:", type="password")
 
 if api_key:
-  # Base de Conhecimento
+  # Base de Conhecimento ampla baseada na grade da disciplina
   base_conhecimento = """
-    # Base de Conhecimento Tira-Dúvidas - CryptoCIn Tutor (CIn/UFPE)
-    # Referência: 'A Graduate Course in Applied Cryptography' (Dan Boneh & Victor Shoup)
+    # Ementa e Base de Conhecimento - Criptografia (CIn/UFPE)
 
-    ## Módulo 1: Fundamentos, Sigilo Perfeito e Segurança Computacional
-    - Princípios e Modelos de Adversário e Reduções matemáticas.
-    - Sigilo Perfeito (Shannon) & One-Time Pad (OTP).
-    - Segurança Computacional e Geradores Pseudoaleatórios (PRG).
+    ## Unidade 1: Introdução e Criptografia Clássica
+    - Histórico, conceitos básicos e objetivos da segurança da informação (Confidencialidade, Integridade, Disponibilidade).
+    - Cifras clássicas (Cifra de César, Vigenère, Cifra de Substituição e Transposição) e criptoanálise básica.
+    - Princípios de Kerckhoffs e noções iniciais de segurança teórica vs. computacional.
 
-    ## Módulo 2: Cifras de Fluxo, CPA e Encriptação Múltipla
-    - Segurança CPA (Chosen-Plaintext Attack) e uso de nonces/IV.
-    - Modos de Operação de Cifras de Bloco (CBC, CTR, GCM).
+    ## Unidade 2: Criptografia Simétrica (Chave Secreta)
+    - Cifras de Fluxo (Stream Ciphers) e OTP (One-Time Pad).
+    - Cifras de Bloco (Block Ciphers): Estrutura de Feistel, DES e AES.
+    - Modos de Operação de Cifras de Bloco (ECB, CBC, CFB, OFB, CTR, GCM) e ataques por CPA/CCA.
+    - Funções de Hash Criptográficas e integridade (SHA-256, SHA-3, resistência a colisões).
+    - Códigos de Autenticação de Mensagem (MACs, HMAC).
 
-    ## Módulo 3: Integridade, MACs e Funções de Hash
-    - MACs (Message Authentication Codes) e Funções de Hash (Resistência à Colisão).
+    ## Unidade 3: Criptografia Assimétrica (Chave Pública)
+    - Conceito de funções de mão única com alçapão (Trapdoor One-Way Functions).
+    - Criptossistema RSA (geração de chaves, cifragem, decifragem e segurança).
+    - Troca de Chaves Diffie-Hellman e o problema do logaritmo discreto.
+    - Criptografia de Curvas Elípticas (ECC).
+    - Assinaturas Digitais e Infraestrutura de Chaves Públicas (PKI / Certificados Digitais).
 
-    ## Módulo 4: Criptografia Assimétrica, Diffie-Hellman e Assinaturas
-    - Funções Trapdoor, RSA, Diffie-Hellman e Curvas Elípticas (ECC).
-
-    ## Módulo 5: Provas de Conhecimento Zero (ZKP)
-    - Completude, Solidez e Propriedade Zero-Knowledge.
+    ## Unidade 4: Protocolos Criptográficos e Tópicos Avançados
+    - Acordo de chaves, autenticação de entidades e protocolos de canal seguro (ex: SSL/TLS, IPsec).
+    - Conceitos básicos de Provas de Conhecimento Zero (Zero-Knowledge Proofs).
+    - Noções de Criptografia Pós-Quântica e aplicações modernas.
     """
 
-  # System Prompt sem LaTeX
+  # System Prompt focado na disciplina do CIn/UFPE como um todo
   system_instruction = f"""
-    Você é o CryptoCIn Tutor, um assistente virtual acadêmico e monitor especialista da disciplina de Criptografia do CIn/UFPE, baseando-se estritamente no livro 'A Graduate Course in Applied Cryptography' (Dan Boneh & Victor Shoup).
+    Você é o CryptoCIn Tutor, um assistente virtual acadêmico e monitor especialista da disciplina de Criptografia do Centro de Informática da UFPE (CIn/UFPE).
 
-    Sua missão principal é ajudar os alunos a resolverem e entenderem dúvidas sobre questões, exercícios, teoremas e conceitos específicos da disciplina. 
+    Sua missão principal é ajudar os alunos a resolverem e entenderem dúvidas sobre questões, exercícios, listas, provas, teoremas e conceitos da ementa oficial da disciplina.
 
     DIRETRIZES DE ATUAÇÃO PARA O TIRA-DÚVIDAS:
-    1. Quando o aluno trouxer uma dúvida teórica ou sobre uma questão, explique o conceito passo a passo de forma didática, clara e analítica.
-    2. Utilize os conceitos formais e matemáticos presentes na base de conhecimento.
-    3. Guie o raciocínio mostrando a intuição por trás da resposta.
+    1. Quando o aluno trouxer uma dúvida teórica, um exercício de lista ou uma questão de prova, explique o conceito passo a passo de forma didática, clara e analítica.
+    2. Utilize a ementa e os tópicos da grade curricular de Criptografia do CIn/UFPE como referência principal para guiar as respostas.
+    3. Guie o raciocínio mostrando a intuição lógica e prática por trás da resposta, contextualizando com segurança da informação.
     4. Escreva todas as explicações e fórmulas matemáticas usando texto normal, português claro e símbolos legíveis (como Pr[], XOR, somatório), evitando completamente o uso de formatação LaTeX ($...$ ou blocos de equação).
-    5. Mantenha um tom encorajador, acadêmico e colaborativo.
+    5. Mantenha um tom encorajador, acadêmico, parceiro e colaborativo, típicos de um monitor do CIn.
 
-    --- BASE DE CONHECIMENTO ---
+    --- EMENTA / BASE DE CONHECIMENTO ---
     {base_conhecimento}
-    ----------------------------
+    -------------------------------------
     """
 
   # Inicializa o histórico de mensagens
@@ -92,7 +97,6 @@ if api_key:
                 {"role": msg["role"], "content": msg["content"]}
             )
 
-          # Modelo universal de alta performance garantido na API da Groq
           response = client.chat.completions.create(
               model="openai/gpt-oss-20b",
               messages=messages_payload,
