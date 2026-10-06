@@ -8,7 +8,7 @@ st.set_page_config(
 st.title("🛡️ CryptoCIn Tutor (CIn/UFPE)")
 st.markdown(
     "O seu assistente virtual para ajudar na disciplina de Criptografia,"
-    " baseado no livro de **Dan Boneh & Victor Shoup**."
+    "*baseado nas referências teóricas do curso*."
 )
 
 # Gestão segura da Chave de API da Groq
@@ -86,15 +86,15 @@ if api_key:
         try:
           client = Groq(api_key=api_key)
 
-          # Monta as mensagens incluindo a instrução de sistema e todo o histórico
           messages_payload = [{"role": "system", "content": system_instruction}]
           for msg in st.session_state.messages:
             messages_payload.append(
                 {"role": msg["role"], "content": msg["content"]}
             )
 
+          # Tentativa com o modelo padrão principal
           response = client.chat.completions.create(
-              model="llama-3.1-8b-instant",
+              model="llama3-70b-8192",
               messages=messages_payload,
               temperature=0.3,
           )
