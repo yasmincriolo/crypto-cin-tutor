@@ -86,9 +86,9 @@ if api_key:
                 {"role": msg["role"], "content": msg["content"]}
             )
 
-          # Utilizando o modelo robusto e rápido garantido
+          # Modelo confirmado a funcionar na sua chave da Groq
           response = client.chat.completions.create(
-              model="llama-3.1-8b-instant",
+              model="openai/gpt-oss-20b",
               messages=messages_payload,
               temperature=0.3,
           )
